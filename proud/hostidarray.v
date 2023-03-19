@@ -1,0 +1,5 @@
+module proud
+
+struct HostIDArray {
+
+}
