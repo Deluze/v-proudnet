@@ -17,7 +17,7 @@ mut:
 	suspend_shrink bool
 }
 
-pub fn new_fast_array_from_ptr[T](data &T, int count) CFastArray[T] {
+pub fn new_fast_array_from_ptr[T](data &T, count int) CFastArray[T] {
 	mut array := CFastArray[T]{}
 
 	array.insert_range(0, data, count)
