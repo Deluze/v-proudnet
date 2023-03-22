@@ -1,21 +1,24 @@
 module proud
 
+import encoding.hex
 
 pub struct ByteArray {
 	CFastArray[u8]
 mut:
-	null bool = true
-	internal bool
+	null     bool = true
+	internal bool = true
 }
 
 [inline]
 pub fn new_byte_array() ByteArray {
-	return ByteArray{}
+	return ByteArray{
+		data: []u8{cap: 0}
+	}
 }
 
 pub fn new_byte_array_from_data(data []u8) ByteArray {
 	return ByteArray{
-		data: data,
+		data: data
 		internal: true
 		null: false
 	}
@@ -45,17 +48,10 @@ pub fn (mut array ByteArray) use_internal_buffer() ! {
 		return error('ByteArray must not be initialized')
 	}
 
-	buffer_size := match array.grow_policy {
-		.normal { 1028 }
-		.high_speed { 4096 }
-		.low_memory { 0 }
-	}
-
-	array.data = []u8{len: buffer_size}
+	array.CFastArray.data = []u8{cap: array.CFastArray.get_recommended_capacity(1024)}
 	array.null = false
 	array.internal = true
 }
-
 
 pub fn (array ByteArray) must_not_null() ! {
 	if array.null {
@@ -87,5 +83,23 @@ pub fn (mut array ByteArray) un_init_buffer() {
 }
 
 pub fn (mut array ByteArray) to_hex_string() string {
-	return ''
+	return hex.encode(array.CFastArray.data)
+}
+
+pub fn (mut array ByteArray) from_hex_string(value string) bool {
+	buffer := hex.decode(value) or {
+		return false
+	}
+
+	if !array.is_null() {
+		array.un_init_buffer()
+	}
+
+	array.use_internal_buffer() or {
+		panic(err)
+	}
+
+	array.CFastArray.add_range(buffer.data, buffer.len)
+
+	return true
 }
