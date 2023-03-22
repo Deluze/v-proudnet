@@ -176,7 +176,7 @@ pub fn (mut a CFastArray[T]) add_count(count int) {
 		a.set_capacity(capacity)
 	}
 
-	a.data << []u8{len: count}
+	a.data << []T{len: count}
 }
 
 pub fn (mut a CFastArray[T]) add_range(data voidptr, count int) {
