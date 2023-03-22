@@ -170,12 +170,12 @@ fn (mut message CMessage) read_to_ptr(dst voidptr, count int) {
 		panic('Count too big')
 	}
 
-	// ptr := &u8(message.buffer.data().data)
-	// unsafe {
-	// 	ptr += message.read_offset
-	// 	vmemcpy(dst, ptr, count)
-	// }
-	// message.read_offset += count
+	mut ptr := &u8(message.buffer.CFastArray.data.data)
+	unsafe {
+		ptr += message.read_offset
+		vmemcpy(dst, ptr, count)
+	}
+	message.read_offset += count
 }
 
 pub fn (mut message CMessage) read_t[T]() T {
