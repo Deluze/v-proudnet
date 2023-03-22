@@ -31,10 +31,6 @@ pub fn (mut message CMessage) get_buffer() ByteArray {
 	return message.buffer
 }
 
-pub fn (mut message CMessage) data_equals(mut rhs CMessage) bool {
-	return message.buffer.equals(mut rhs.get_buffer())
-}
-
 pub fn (mut message CMessage) can_read(count int) bool {
 	return count + message.read_offset < message.get_length()
 }
@@ -44,7 +40,7 @@ pub fn (mut message CMessage) read(mut data []u8, count int) bool {
 		return false
 	}
 
-	ptr := &u8(message.buffer.data().data)
+	ptr := &u8(message.buffer.CFastArray.get_data().data)
 	unsafe {
 		ptr += message.read_offset
 		vmemcpy(data.data, ptr, count)
@@ -59,8 +55,9 @@ pub fn (mut message CMessage) write(data voidptr, count int) {
 
 	message.adjust_write_offset_byte_align()
 
-	message.buffer.set_min_capacity(message.write_offset + count)
-	message.buffer.insert_range(message.write_offset, data, count)
+	mut buffer := message.get_buffer()
+	buffer.CFastArray.set_min_capacity(message.write_offset + count)
+	buffer.CFastArray.insert_range(message.write_offset, data, count)
 
 	message.write_offset += count
 }
@@ -78,7 +75,8 @@ pub fn (mut message CMessage) set_read_offset(offset int) {
 }
 
 pub fn (mut message CMessage) set_length(count int) {
-	message.buffer.set_count(count)
+	mut buffer := message.get_buffer()
+	buffer.CFastArray.set_count(count)
 }
 
 pub fn (mut message CMessage) get_write_offset() int {
@@ -172,12 +170,12 @@ fn (mut message CMessage) read_to_ptr(dst voidptr, count int) {
 		panic('Count too big')
 	}
 
-	ptr := &u8(message.buffer.data().data)
-	unsafe {
-		ptr += message.read_offset
-		vmemcpy(dst, ptr, count)
-	}
-	message.read_offset += count
+	// ptr := &u8(message.buffer.data().data)
+	// unsafe {
+	// 	ptr += message.read_offset
+	// 	vmemcpy(dst, ptr, count)
+	// }
+	// message.read_offset += count
 }
 
 pub fn (mut message CMessage) read_t[T]() T {
@@ -246,7 +244,7 @@ pub fn (mut message CMessage) read_array_t[T]() []T {
 }
 
 pub fn (mut message CMessage) write_byte_array(mut array ByteArray) {
-	message.write(array.data().data, array.get_count())
+	// message.write(array.data().data, array.get_count())
 }
 
 pub fn (mut message CMessage) read_byte_array() ByteArray {
@@ -255,5 +253,6 @@ pub fn (mut message CMessage) read_byte_array() ByteArray {
 }
 
 pub fn (mut message CMessage) get_length() int {
-	return message.get_buffer().get_count()
+	return 0
+	// return message.get_buffer().get_count()
 }
