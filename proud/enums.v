@@ -53,7 +53,7 @@ enum ErrorType {
 	not_implemented_rmi
 }
 
-enum HostID as u8 {
+pub enum HostID as u32 {
 	@none
 	server
 	last

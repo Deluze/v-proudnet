@@ -1,5 +1,3 @@
 module proud
 
-struct HostIDArray {
-	CFastArray[HostID]
-}
+type HostIDArray = CFastArray[HostID]
