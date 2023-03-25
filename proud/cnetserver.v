@@ -12,10 +12,6 @@ struct NetServerEvent {
 
 }
 
-struct CP2PGroup {
-
-}
-
 struct CP2PGroupInfo {
 
 }
@@ -64,8 +60,12 @@ struct CNetServerParameter {
 struct CNetServer {
 	CoreEventFunctions
 mut:
+	parameters CNetServerParameter
 	clients map[HostID]CNetClient
+	p2p_groups map[HostID]P2PGroup
 	host_tag voidptr
+	allow_empty_p2p_groups bool
+	detect_speedhack bool
 }
 
 pub fn (mut s CNetServer) start(param CNetServerParameter) ! {
@@ -77,7 +77,7 @@ pub fn (mut s CNetServer) stop() {
 }
 
 pub fn (mut s CNetServer) allow_empty_p2p_groups(enable bool) {
-
+	s.allow_empty_p2p_groups = enable
 }
 
 pub fn (mut s CNetServer) get_remote_identifiable_local_addrs() []NamedAddrPort {
@@ -125,7 +125,7 @@ pub fn (mut s CNetServer) set_speed_hack_detector_reck_ratio_percent(percent int
 }
 
 pub fn (mut s CNetServer) enable_speed_hack_detector(enable bool) {
-
+	s.detect_speedhack = enable
 }
 
 pub fn (mut s CNetServer) set_message_max_length(server_message_max_length int, client_message_max_length int) {
@@ -256,20 +256,24 @@ pub fn (mut s CNetServer) is_valid_host_id(host_id HostID) bool {
 	return false
 }
 
-pub fn (mut s CNetServer) get_p2p_groups() []CP2PGroup {
-	return []
+pub fn (mut s CNetServer) get_p2p_groups() []P2PGroup {
+	return s.p2p_groups.values()
 }
 
 pub fn (mut s CNetServer) get_p2p_group_count() int {
-	return 0
+	return s.p2p_groups.len
 }
 
 pub fn (mut s CNetServer) get_client_info(client_host_id HostID) !CNetClientInfo {
-	return error(':o')
+	client := s.p2p_groups[client_host_id] or {
+		return error('Client not found')
+	}
+
+	return CNetClientInfo{}
 }
 
 pub fn (mut s CNetServer) is_connected_client(client_host_id HostID) bool {
-	return false
+	return client_host_id in s.clients
 }
 
 pub fn (mut s CNetServer) set_host_tag(host_id HostID, tag voidptr) bool {
@@ -281,11 +285,23 @@ pub fn (mut s CNetServer) get_time_ms() u64 {
 }
 
 pub fn (mut s CNetServer) join_p2p_group(member_host_id HostID, group_host_id HostID) bool {
-	return false
+	mut group := s.p2p_groups[group_host_id] or {
+		return false
+	}
+
+	group.add_member(member_host_id)
+
+	return true
 }
 
 pub fn (mut s CNetServer) leave_p2p_group(member_host_id HostID, group_host_id HostID) bool {
-	return false
+	mut group := s.p2p_groups[group_host_id] or {
+		return false
+	}
+
+	group.remove_member(member_host_id)
+
+	return true
 }
 
 pub fn (mut s CNetServer) set_event_sink(event_sink []NetServerEvent) {
