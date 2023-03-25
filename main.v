@@ -2,10 +2,6 @@ module main
 import proud
 
 fn main() {
-	random := proud.guid_random()
-	with_brackets := proud.guid_to_bracket_string(random)
-
-	println(random)
-	println(with_brackets)
-	println(proud.guid_bracket_string_to_guid(with_brackets))
+	addr_port := proud.addr_port_from_ip_port_v4('127.0.0.1', 8080)
+	println(addr_port)
 }
