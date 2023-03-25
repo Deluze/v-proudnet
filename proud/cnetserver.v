@@ -63,6 +63,9 @@ struct CNetServerParameter {
 
 struct CNetServer {
 	CoreEventFunctions
+mut:
+	clients map[HostID]CNetClient
+	host_tag voidptr
 }
 
 pub fn (mut s CNetServer) start(param CNetServerParameter) ! {
@@ -142,7 +145,7 @@ pub fn (mut s CNetServer) set_direct_p2p_start_condition(condition DirectP2PStar
 }
 
 pub fn (mut s CNetServer) get_most_suitable_super_peer_in_group(group_id HostID, exclude HostID) HostID {
-	return HostID.server
+	return 1
 }
 
 pub fn (mut s CNetServer) get_udp_socket_addr_list() []AddrPort {
@@ -185,8 +188,8 @@ pub fn (mut s CNetServer) close_every_connection() {
 
 }
 
-pub fn (mut s CNetServer) create_p2p_group(client_host_ids []HostID) {
-
+pub fn (mut s CNetServer) create_p2p_group(client_host_ids []HostID) HostID {
+	return 1
 }
 
 pub fn (mut s CNetServer) destroy_p2p_group(group_host_id HostID) {

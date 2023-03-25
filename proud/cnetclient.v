@@ -1,11 +1,18 @@
 module proud
 
 struct CP2PConnectionStats {
-
+	total_p2p_count u32
+	direct_p2p_count u32
+	to_remote_peer_send_udp_message_trial_count u32
+	to_remote_peer_send_udp_message_success_count u32
 }
 
 struct CP2PPairConnectionStats {
-
+	to_remote_b_send_udp_message_trial_count u32
+	to_remote_b_send_udp_message_success_count u32
+	to_remote_a_send_udp_message_trial_count u32
+	to_remote_a_send_udp_message_success_count u32
+	is_relayed bool
 }
 
 struct CRemoteOfflineEventArgs {
@@ -51,6 +58,8 @@ struct CNetConnectionParams {
 
 struct CNetClient {
 	CoreEventFunctions
+mut:
+	host_tag voidptr
 }
 
 pub fn new_net_client() CNetClient {
@@ -81,7 +90,7 @@ pub fn (c CNetClient) get_indirect_server_time_ms(peer_host HostID) {
 }
 
 pub fn (c CNetClient) get_local_host_id() HostID {
-	return HostID.@none
+	return 1
 }
 
 pub fn (c CNetClient) get_nat_device_name() string {
@@ -116,8 +125,8 @@ pub fn (c CNetClient) get_peer_info(peer_host_id HostID) CNetPeerInfo {
 	return CNetPeerInfo{}
 }
 
-pub fn (c CNetClient) set_host_tag(host_id HostID) {
-	// todo: ?
+pub fn (mut c CNetClient) set_host_tag(host_id HostID, tag voidptr) {
+
 }
 
 pub fn (c CNetClient) get_server_time_ms() u64 {

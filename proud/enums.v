@@ -53,11 +53,7 @@ enum ErrorType {
 	not_implemented_rmi
 }
 
-pub enum HostID as u32 {
-	@none
-	server
-	last
-}
+type HostID = u32
 
 enum RmiID as u16 {
 	@none
