@@ -24,8 +24,41 @@ struct CNetServerStats {
 
 }
 
-struct CNetServerParameter {
+struct ServerUdpAssignMode {
 
+}
+
+struct CNetServerParameter {
+	server_addr_at_client string
+	local_nic_addr string
+	tcp_ports CFastArray[int]
+	udp_ports CFastArray[int]
+	udp_assign_mode ServerUdpAssignMode
+	protocol_version GuidWithBrackets
+	thread_count int
+	net_worker_thread_count int
+	encrypted_key_message_key_length EncryptLevel
+	fast_encrypted_key_message_key_length FastEncryptLevel
+	enable_p2p_encrypted_messaging bool
+	allow_server_as_p2p_group_member bool
+	enable_iocp bool
+	upnp_detect_nat_device bool
+	upnp_tcp_addr_port_mapping bool
+	using_over_block_icmp_environment bool
+	timer_callback_interval_ms u32
+	timer_callback_parallel_max_count i32
+	timer_callback_context voidptr
+	enable_nagle_algorithm bool
+	host_id_generation_policy HostIDGenerationPolicy
+	client_emergency_log_max_line_count u32
+	pre_create_p2p_group_start_host_id HostID
+	pre_create_p2p_group_count int
+	pre_create_p2p_group_option CP2PGroupOption
+	enable_ping_test bool
+	ignore_failed_bind_port bool
+	failed_bind_ports CFastArray[int]
+	external_user_worker_thread_pool voidptr
+	external_net_worker_thread_pool voidptr
 }
 
 struct CNetServer {
